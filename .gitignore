@@ -1,0 +1,28 @@
+# === Python related ===
+__pycache__/
+*.pyc
+*.pyo
+
+# === Environment files ===
+.env
+venv/
+env/
+*.env
+
+# === API keys or config ===
+config.py
+
+# === VS Code settings ===
+.vscode/
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+
+# === Jupyter & Colab stuff (just in case) ===
+.ipynb_checkpoints/
+
+# === Logs or test outputs ===
+*.log
+*.out
+*.tmp
