@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infotainment Control Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .control-center {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        
+        .panel h2 {
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-size: 1.5em;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .media-panel {
+            grid-column: 1 / -1;
+        }
+        
+        .media-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .control-btn.play {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+            width: 80px;
+            height: 80px;
+            font-size: 24px;
+        }
+        
+        .volume-control, .progress-bar {
+            margin: 15px 0;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+        
+        .climate-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .temp-display {
+            font-size: 2.5em;
+            text-align: center;
+            margin: 20px 0;
+            color: #4CAF50;
+        }
+        
+        .nav-panel {
+            text-align: center;
+        }
+        
+        .destination-input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+            margin: 15px 0;
+        }
+        
+        .destination-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+            min-width: 120px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .btn.secondary {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+        
+        .status-display {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .vehicle-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .info-card {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .info-value {
+            font-size: 1.8em;
+            color: #4CAF50;
+            margin: 5px 0;
+        }
+        
+        .now-playing {
+            text-align: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        .song-title {
+            font-size: 1.2em;
+            margin: 5px 0;
+        }
+        
+        .artist-name {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        @media (max-width: 768px) {
+            .control-center {
+                grid-template-columns: 1fr;
+            }
+            
+            .climate-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="control-center">
+        <!-- Media Control Panel -->
+        <div class="panel media-panel">
+            <h2>🎵 Media Center</h2>
+            
+            <div class="now-playing">
+                <div class="song-title" id="currentSong">Summer Breeze</div>
+                <div class="artist-name" id="currentArtist">Smooth Jazz Collection</div>
+            </div>
+            
+            <div class="progress-bar">
+                <input type="range" class="slider" id="progressSlider" min="0" max="100" value="35">
+                <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                    <span id="currentTime">1:23</span>
+                    <span id="totalTime">3:45</span>
+                </div>
+            </div>
+            
+            <div class="media-controls">
+                <button class="control-btn" onclick="mediaControl('prev')">⏮</button>
+                <button class="control-btn play" onclick="mediaControl('play')" id="playBtn">⏯</button>
+                <button class="control-btn" onclick="mediaControl('next')">⏭</button>
+            </div>
+            
+            <div class="volume-control">
+                <label>🔊 Volume</label>
+                <input type="range" class="slider" id="volumeSlider" min="0" max="100" value="65" onchange="updateVolume(this.value)">
+            </div>
+            
+            <div class="quick-actions">
+                <button class="btn secondary" onclick="changeSource('radio')">📻 Radio</button>
+                <button class="btn secondary" onclick="changeSource('bluetooth')">📱 Bluetooth</button>
+                <button class="btn secondary" onclick="changeSource('usb')">💾 USB</button>
+                <button class="btn secondary" onclick="changeSource('spotify')">🎵 Spotify</button>
+            </div>
+        </div>
+        
+        <!-- Climate Control Panel -->
+        <div class="panel">
+            <h2>🌡️ Climate Control</h2>
+            
+            <div class="temp-display" id="tempDisplay">72°F</div>
+            
+            <div class="climate-controls">
+                <button class="btn" onclick="adjustTemp(-1)">➖ Cooler</button>
+                <button class="btn" onclick="adjustTemp(1)">➕ Warmer</button>
+                <button class="btn secondary" onclick="toggleAC()">❄️ A/C</button>
+                <button class="btn secondary" onclick="toggleHeater()">🔥 Heat</button>
+            </div>
+            
+            <div class="climate-controls">
+                <button class="btn secondary" onclick="setFanSpeed('low')">💨 Low Fan</button>
+                <button class="btn secondary" onclick="setFanSpeed('high')">🌪️ High Fan</button>
+                <button class="btn secondary" onclick="toggleDefrost()">🌨️ Defrost</button>
+                <button class="btn secondary" onclick="toggleRecirculate()">🔄 Recirculate</button>
+            </div>
+        </div>
+        
+        <!-- Navigation Panel -->
+        <div class="panel nav-panel">
+            <h2>🗺️ Navigation</h2>
+            
+            <input type="text" class="destination-input" id="destinationInput" placeholder="Enter destination...">
+            
+            <div class="quick-actions">
+                <button class="btn" onclick="navigateTo('home')">🏠 Home</button>
+                <button class="btn" onclick="navigateTo('work')">🏢 Work</button>
+                <button class="btn secondary" onclick="findNearby('gas')">⛽ Gas Station</button>
+                <button class="btn secondary" onclick="findNearby('restaurant')">🍽️ Restaurant</button>
+            </div>
+            
+            <button class="btn" onclick="startNavigation()" style="width: 100%; margin: 15px 0;">🚗 Start Navigation</button>
+            
+            <div class="status-display" id="navStatus">
+                Ready for navigation
+            </div>
+        </div>
+        
+        <!-- Vehicle Information Panel -->
+        <div class="panel">
+            <h2>🚗 Vehicle Status</h2>
+            
+            <div class="vehicle-info">
+                <div class="info-card">
+                    <div>Speed</div>
+                    <div class="info-value" id="vehicleSpeed">65 mph</div>
+                </div>
+                <div class="info-card">
+                    <div>Fuel</div>
+                    <div class="info-value" id="fuelLevel">75%</div>
+                </div>
+                <div class="info-card">
+                    <div>Engine RPM</div>
+                    <div class="info-value" id="engineRPM">2400</div>
+                </div>
+                <div class="info-card">
+                    <div>Temperature</div>
+                    <div class="info-value" id="engineTemp">195°F</div>
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <button class="btn secondary" onclick="runDiagnostics()">🔧 Diagnostics</button>
+                <button class="btn secondary" onclick="checkMaintenance()">🛠️ Maintenance</button>
+                <button class="btn danger" onclick="emergencyCall()">🚨 Emergency</button>
+                <button class="btn secondary" onclick="vehicleSettings()">⚙️ Settings</button>
+            </div>
+            
+            <div class="status-display" id="vehicleStatus">
+                All systems operational
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTemp = 72;
+        let isPlaying = false;
+        let currentVolume = 65;
+        
+        // Media Control Functions
+        function mediaControl(action) {
+            const playBtn = document.getElementById('playBtn');
+            const statusDisplay = document.getElementById('vehicleStatus');
+            
+            switch(action) {
+                case 'play':
+                    isPlaying = !isPlaying;
+                    playBtn.textContent = isPlaying ? '⏸' : '⏯';
+                    updateStatus(`Music ${isPlaying ? 'playing' : 'paused'}`);
+                    break;
+                case 'next':
+                    updateSong();
+                    updateStatus('Next track');
+                    break;
+                case 'prev':
+                    updateStatus('Previous track');
+                    break;
+            }
+        }
+        
+        function updateVolume(value) {
+            currentVolume = value;
+            updateStatus(`Volume set to ${value}%`);
+        }
+        
+        function changeSource(source) {
+            updateStatus(`Audio source changed to ${source}`);
+            updateSong();
+        }
+        
+        function updateSong() {
+            const songs = [
+                { title: "Summer Breeze", artist: "Smooth Jazz Collection" },
+                { title: "Highway Dreams", artist: "Road Trip Classics" },
+                { title: "Digital Sunset", artist: "Electronic Vibes" },
+                { title: "City Lights", artist: "Urban Sounds" }
+            ];
+            
+            const randomSong = songs[Math.floor(Math.random() * songs.length)];
+            document.getElementById('currentSong').textContent = randomSong.title;
+            document.getElementById('currentArtist').textContent = randomSong.artist;
+        }
+        
+        // Climate Control Functions
+        function adjustTemp(change) {
+            currentTemp += change;
+            document.getElementById('tempDisplay').textContent = `${currentTemp}°F`;
+            updateStatus(`Temperature ${change > 0 ? 'increased' : 'decreased'} to ${currentTemp}°F`);
+        }
+        
+        function toggleAC() {
+            updateStatus('Air conditioning toggled');
+        }
+        
+        function toggleHeater() {
+            updateStatus('Heater toggled');
+        }
+        
+        function setFanSpeed(speed) {
+            updateStatus(`Fan speed set to ${speed}`);
+        }
+        
+        function toggleDefrost() {
+            updateStatus('Defrost toggled');
+        }
+        
+        function toggleRecirculate() {
+            updateStatus('Air recirculation toggled');
+        }
+        
+        // Navigation Functions
+        function navigateTo(destination) {
+            document.getElementById('navStatus').textContent = `Navigating to ${destination}...`;
+            updateStatus(`Navigation set to ${destination}`);
+        }
+        
+        function findNearby(type) {
+            document.getElementById('navStatus').textContent = `Finding nearby ${type}...`;
+            updateStatus(`Searching for nearby ${type}`);
+        }
+        
+        function startNavigation() {
+            const destination = document.getElementById('destinationInput').value;
+            if (destination) {
+                document.getElementById('navStatus').textContent = `Navigating to ${destination}`;
+                updateStatus(`Navigation started to ${destination}`);
+            } else {
+                updateStatus('Please enter a destination');
+            }
+        }
+        
+        // Vehicle Functions
+        function runDiagnostics() {
+            updateStatus('Running vehicle diagnostics...');
+            setTimeout(() => {
+                updateStatus('Diagnostics complete - No issues found');
+            }, 2000);
+        }
+        
+        function checkMaintenance() {
+            updateStatus('Checking maintenance schedule...');
+            setTimeout(() => {
+                updateStatus('Next service due in 2,500 miles');
+            }, 1500);
+        }
+        
+        function emergencyCall() {
+            updateStatus('🚨 EMERGENCY CALL INITIATED 🚨');
+            setTimeout(() => {
+                updateStatus('Emergency services contacted');
+            }, 1000);
+        }
+        
+        function vehicleSettings() {
+            updateStatus('Vehicle settings panel opened');
+        }
+        
+        // Utility Functions
+        function updateStatus(message) {
+            document.getElementById('vehicleStatus').textContent = message;
+            console.log(`Status: ${message}`);
+        }
+        
+        // Simulate real-time vehicle data updates
+        function updateVehicleData() {
+            document.getElementById('vehicleSpeed').textContent = `${Math.floor(Math.random() * 40) + 50} mph`;
+            document.getElementById('fuelLevel').textContent = `${Math.floor(Math.random() * 30) + 60}%`;
+            document.getElementById('engineRPM').textContent = Math.floor(Math.random() * 1000) + 2000;
+            document.getElementById('engineTemp').textContent = `${Math.floor(Math.random() * 10) + 190}°F`;
+        }
+        
+        // Progress bar simulation
+        function updateProgress() {
+            const progressSlider = document.getElementById('progressSlider');
+            if (isPlaying) {
+                let currentValue = parseInt(progressSlider.value);
+                if (currentValue < 100) {
+                    progressSlider.value = currentValue + 1;
+                } else {
+                    progressSlider.value = 0;
+                    updateSong();
+                }
+                
+                // Update time display
+                const minutes = Math.floor(currentValue * 3.75 / 60);
+                const seconds = Math.floor(currentValue * 3.75 % 60);
+                document.getElementById('currentTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+        
+        // Initialize
+        setInterval(updateVehicleData, 3000);
+        setInterval(updateProgress, 1000);
+        updateVehicleData();
+        updateSong();
+        updateStatus('Infotainment system ready');
+    </script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infotainment System - Simulation UI</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-active { background-color: #4CAF50; }
+        .status-inactive { background-color: #f44336; }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 Infotainment System Simulation</h1>
+            <p>Layer 1 - Simulation UI Interface</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <h3>System Status</h3>
+                <p><span class="status-indicator status-active"></span>Layer 1: Simulation UI</p>
+                <p><span class="status-indicator status-active"></span>Layer 2: Data Monitoring</p>
+                <p><span class="status-indicator status-active"></span>Layer 3: AI Voice Assistant</p>
+                <p><span class="status-indicator status-active"></span>Layer 4: Infotainment Control</p>
+                <p><span class="status-indicator status-active"></span>Layer 5: UI Integration</p>
+            </div>
+
+            <div class="card">
+                <h3>Vehicle Data</h3>
+                <p>Speed: <span id="speed">65</span> mph</p>
+                <p>Engine RPM: <span id="rpm">2400</span></p>
+                <p>Fuel Level: <span id="fuel">75</span>%</p>
+                <p>Temperature: <span id="temp">72</span>°F</p>
+            </div>
+
+            <div class="card">
+                <h3>Media Controls</h3>
+                <p>Now Playing: Simulation Track 1</p>
+                <div class="controls">
+                    <button class="btn btn-secondary" onclick="mediaControl('prev')">⏮</button>
+                    <button class="btn btn-primary" onclick="mediaControl('play')">⏯</button>
+                    <button class="btn btn-secondary" onclick="mediaControl('next')">⏭</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Navigation</h3>
+                <p>Current Location: Simulation City</p>
+                <p>Destination: Tech District</p>
+                <p>ETA: 15 minutes</p>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="navigate()">Start Navigation</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Communication with Backend Layers</h3>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="connectToBackend()">Connect to Layer 1 Backend</button>
+                <button class="btn btn-secondary" onclick="testDataMonitoring()">Test Layer 2 Data Monitoring</button>
+                <button class="btn btn-secondary" onclick="activateVoiceAssistant()">Activate Layer 3 Voice Assistant</button>
+                <button class="btn btn-secondary" onclick="testInfotainmentControl()">Test Layer 4 Controls</button>
+            </div>
+            <div id="status" style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                Ready to connect...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulate real-time data updates
+        function updateVehicleData() {
+            document.getElementById('speed').textContent = Math.floor(Math.random() * 40) + 50;
+            document.getElementById('rpm').textContent = Math.floor(Math.random() * 1000) + 2000;
+            document.getElementById('fuel').textContent = Math.floor(Math.random() * 30) + 60;
+            document.getElementById('temp').textContent = Math.floor(Math.random() * 10) + 68;
+        }
+
+        function mediaControl(action) {
+            updateStatus(`Media control: ${action} executed`);
+        }
+
+        function navigate() {
+            updateStatus('Navigation started to Tech District');
+        }
+
+        function connectToBackend() {
+            updateStatus('Connecting to Layer 1 Backend (app.py)...');
+            // Simulate API call
+            setTimeout(() => {
+                updateStatus('Connected to Layer 1 Backend successfully!');
+            }, 1000);
+        }
+
+        function testDataMonitoring() {
+            updateStatus('Testing Layer 2 Data Monitoring...');
+            setTimeout(() => {
+                updateStatus('Layer 2 Data Monitoring active - receiving vehicle telemetry');
+            }, 1000);
+        }
+
+        function activateVoiceAssistant() {
+            updateStatus('Activating Layer 3 AI Voice Assistant...');
+            setTimeout(() => {
+                updateStatus('Layer 3 Voice Assistant ready for commands');
+            }, 1000);
+        }
+
+        function testInfotainmentControl() {
+            updateStatus('Testing Layer 4 Infotainment Control...');
+            setTimeout(() => {
+                updateStatus('Layer 4 Infotainment Control systems operational');
+            }, 1000);
+        }
+
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+
+        // Start data simulation
+        setInterval(updateVehicleData, 2000);
+        updateVehicleData();
+    </script>
+</body>
+</html>

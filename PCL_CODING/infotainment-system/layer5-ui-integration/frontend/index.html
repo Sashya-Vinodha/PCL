@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Infotainment System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .main-container {
+            display: grid;
+            grid-template-areas: 
+                "header header header"
+                "nav main sidebar"
+                "footer footer footer";
+            grid-template-rows: 60px 1fr 50px;
+            grid-template-columns: 250px 1fr 300px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            grid-area: header;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        
+        .nav-panel {
+            grid-area: nav;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .main-content {
+            grid-area: main;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .sidebar {
+            grid-area: sidebar;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .footer {
+            grid-area: footer;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .system-status {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 5px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .nav-item i {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #4CAF50;
+            border-bottom: 2px solid rgba(76, 175, 80, 0.3);
+            padding-bottom: 5px;
+        }
+        
+        .widget {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .media-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        .control-btn.primary {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+            width: 60px;
+            height: 60px;
+            font-size: 20px;
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .btn.secondary {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .info-card {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-value {
+            font-size: 1.5em;
+            color: #4CAF50;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        
+        .status-bar {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .layer-status {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .layer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+        
+        .climate-temp {
+            font-size: 2em;
+            text-align: center;
+            color: #2196F3;
+            margin: 15px 0;
+        }
+        
+        .now-playing {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .song-title {
+            font-size: 1.1em;
+            margin: 5px 0;
+        }
+        
+        .artist-name {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-areas: 
+                    "header"
+                    "main";
+                grid-template-columns: 1fr;
+                grid-template-rows: 60px 1fr;
+            }
+            
+            .nav-panel, .sidebar, .footer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🚗 Unified Infotainment System</div>
+            <div class="system-status">
+                <span>Layer 5 - UI Integration</span>
+                <div class="status-indicator"></div>
+                <span id="currentTime">--:--</span>
+            </div>
+        </div>
+        
+        <!-- Navigation Panel -->
+        <div class="nav-panel">
+            <h3 style="margin-bottom: 20px; color: #4CAF50;">System Layers</h3>
+            
+            <div class="nav-item active" onclick="showSection('dashboard')">
+                <span>📊</span>
+                <span>Dashboard</span>
+            </div>
+            
+            <div class="nav-item" onclick="showSection('media')">
+                <span>🎵</span>
+                <span>Media Center</span>
+            </div>
+            
+            <div class="nav-item" onclick="showSection('climate')">
+                <span>🌡️</span>
+                <span>Climate Control</span>
+            </div>
+            
+            <div class="nav-item" onclick="showSection('navigation')">
+                <span>🗺️</span>
+                <span>Navigation</span>
+            </div>
+            
+            <div class="nav-item" onclick="showSection('vehicle')">
+                <span>🚗</span>
+                <span>Vehicle Status</span>
+            </div>
+            
+            <div class="nav-item" onclick="showSection('voice')">
+                <span>🎙️</span>
+                <span>Voice Assistant</span>
+            </div>
+            
+            <div class="nav-item" onclick="showSection('monitoring')">
+                <span>📈</span>
+                <span>Data Monitoring</span>
+            </div>
+            
+            <div class="nav-item" onclick="showSection('settings')">
+                <span>⚙️</span>
+                <span>Settings</span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="content-section">
+                <div class="section-title">System Overview</div>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div>Current Speed</div>
+                        <div class="info-value" id="dashSpeed">65 mph</div>
+                    </div>
+                    <div class="info-card">
+                        <div>Fuel Level</div>
+                        <div class="info-value" id="dashFuel">75%</div>
+                    </div>
+                    <div class="info-card">
+                        <div>Engine RPM</div>
+                        <div class="info-value" id="dashRPM">2400</div>
+                    </div>
+                    <div class="info-card">
+                        <div>Temperature</div>
+                        <div class="info-value" id="dashTemp">195°F</div>
+                    </div>
+                </div>
+                
+                <div class="widget">
+                    <h4>Now Playing</h4>
+                    <div class="now-playing">
+                        <div class="song-title" id="dashSong">Summer Breeze</div>
+                        <div class="artist-name" id="dashArtist">Smooth Jazz Collection</div>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="btn" onclick="connectToLayers()">Connect All Layers</button>
+                    <button class="btn secondary" onclick="runSystemCheck()">System Check</button>
+                    <button class="btn secondary" onclick="toggleDarkMode()">Toggle Theme</button>
+                    <button class="btn danger" onclick="emergencyMode()">Emergency</button>
+                </div>
+            </div>
+            
+            <!-- Media Section -->
+            <div id="media" class="content-section" style="display: none;">
+                <div class="section-title">Media Control Center</div>
+                
+                <div class="now-playing">
+                    <div class="song-title" id="mediaSong">Summer Breeze</div>
+                    <div class="artist-name" id="mediaArtist">Smooth Jazz Collection</div>
+                </div>
+                
+                <div class="slider-container">
+                    <input type="range" class="slider" id="progressSlider" min="0" max="100" value="35">
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                        <span id="currentTime">1:23</span>
+                        <span id="totalTime">3:45</span>
+                    </div>
+                </div>
+                
+                <div class="media-controls">
+                    <button class="control-btn" onclick="mediaControl('prev')">⏮</button>
+                    <button class="control-btn primary" onclick="mediaControl('play')" id="playBtn">▶</button>
+                    <button class="control-btn" onclick="mediaControl('next')">⏭</button>
+                </div>
+                
+                <div class="slider-container">
+                    <label>🔊 Volume</label>
+                    <input type="range" class="slider" id="volumeSlider" min="0" max="100" value="65">
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="btn secondary" onclick="changeSource('radio')">📻 Radio</button>
+                    <button class="btn secondary" onclick="changeSource('bluetooth')">📱 Bluetooth</button>
+                    <button class="btn secondary" onclick="changeSource('usb')">💾 USB</button>
+                    <button class="btn secondary" onclick="changeSource('spotify')">🎵 Spotify</button>
+                </div>
+            </div>
+            
+            <!-- Climate Section -->
+            <div id="climate" class="content-section" style="display: none;">
+                <div class="section-title">Climate Control</div>
+                
+                <div class="climate-temp" id="climateTemp">72°F</div>
+                
+                <div class="quick-actions">
+                    <button class="btn" onclick="adjustTemp(-1)">➖ Cooler</button>
+                    <button class="btn" onclick="adjustTemp(1)">➕ Warmer</button>
+                    <button class="btn secondary" onclick="toggleAC()">❄️ A/C</button>
+                    <button class="btn secondary" onclick="toggleHeater()">🔥 Heat</button>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="btn secondary" onclick="setFanSpeed('low')">💨 Low Fan</button>
+                    <button class="btn secondary" onclick="setFanSpeed('high')">🌪️ High Fan</button>
+                    <button class="btn secondary" onclick="toggleDefrost()">🌨️ Defrost</button>
+                    <button class="btn secondary" onclick="toggleRecirculate()">🔄 Recirculate</button>
+                </div>
+                
+                <div class="slider-container">
+                    <label>Fan Speed</label>
+                    <input type="range" class="slider" id="fanSlider" min="0" max="100" value="50">
+                </div>
+            </div>
+            
+            <!-- Navigation Section -->
+            <div id="navigation" class="content-section" style="display: none;">
+                <div class="section-title">Navigation System</div>
+                
+                <input type="text" id="destinationInput" placeholder="Enter destination..." 
+                       style="width: 100%; padding: 15px; border: none; border-radius: 10px; background: rgba(255,255,255,0.1); color: white; margin: 15px 0;">
+                
+                <div class="quick-actions">
+                    <button class="btn" onclick="navigateTo('home')">🏠 Home</button>
+                    <button class="btn" onclick="navigateTo('work')">🏢 Work</button>
+                    <button class="btn secondary" onclick="findNearby('gas')">⛽ Gas Station</button>
+                    <button class="btn secondary" onclick="findNearby('restaurant')">🍽️ Restaurant</button>
+                </div>
+                
+                <button class="btn" onclick="startNavigation()" style="width: 100%; margin: 15px 0;">🚗 Start Navigation</button>
+                
+                <div class="status-bar" id="navStatus">Ready for navigation</div>
+                
+                <div class="widget">
+                    <h4>Current Route</h4>
+                    <p>ETA: <span id="eta">--</span></p>
+                    <p>Distance: <span id="distance">--</span></p>
+                    <p>Traffic: <span id="traffic">Normal</span></p>
+                </div>
+            </div>
+            
+            <!-- Vehicle Section -->
+            <div id="vehicle" class="content-section" style="display: none;">
+                <div class="section-title">Vehicle Information</div>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div>Speed</div>
+                        <div class="info-value" id="vehicleSpeed">65 mph</div>
+                    </div>
+                    <div class="info-card">
+                        <div>Fuel</div>
+                        <div class="info-value" id="vehicleFuel">75%</div>
+                    </div>
+                    <div class="info-card">
+                        <div>Engine RPM</div>
+                        <div class="info-value" id="vehicleRPM">2400</div>
+                    </div>
+                    <div class="info-card">
+                        <div>Engine Temp</div>
+                        <div class="info-value" id="vehicleTemp">195°F</div>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="btn secondary" onclick="runDiagnostics()">🔧 Diagnostics</button>
+                    <button class="btn secondary" onclick="checkMaintenance()">🛠️ Maintenance</button>
+                    <button class="btn danger" onclick="emergencyCall()">🚨 Emergency</button>
+                    <button class="btn secondary" onclick="vehicleSettings()">⚙️ Settings</button>
+                </div>
+                
+                <div class="status-bar" id="vehicleStatus">All systems operational</div>
+            </div>
+            
+            <!-- Voice Assistant Section -->
+            <div id="voice" class="content-section" style="display: none;">
+                <div class="section-title">AI Voice Assistant</div>
+                
+                <div class="widget">
+                    <h4>Voice Status</h4>
+                    <p>Status: <span id="voiceStatus">Ready</span></p>
+                    <p>Last Command: <span id="lastCommand">--</span></p>
+                    <p>Last Response: <span id="lastResponse">--</span></p>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="btn" onclick="startListening()">🎙️ Start Listening</button>
+                    <button class="btn secondary" onclick="stopListening()">⏹️ Stop Listening</button>
+                    <button class="btn secondary" onclick="toggleVoice()">🔊 Toggle Voice</button>
+                </div>
+                
+                <div class="widget">
+                    <h4>Test Commands</h4>
+                    <div class="quick-actions">
+                        <button class="btn secondary" onclick="testCommand('play music')">Play Music</button>
+                        <button class="btn secondary" onclick="testCommand('navigate home')">Navigate Home</button>
+                        <button class="btn secondary" onclick="testCommand('increase temperature')">Set Temperature</button>
+                        <button class="btn secondary" onclick="testCommand('what is my speed')">Check Speed</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data Monitoring Section -->
+            <div id="monitoring" class="content-section" style="display: none;">
+                <div class="section-title">System Monitoring</div>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div>CPU Usage</div>
+                        <div class="info-value" id="cpuUsage">--</div>
+                    </div>
+                    <div class="info-card">
+                        <div>Memory Usage</div>
+                        <div class="info-value" id="memoryUsage">--</div>
+                    </div>
+                    <div class="info-card">
+                        <div>Alerts</div>
+                        <div class="info-value" id="alertCount">0</div>
+                    </div>
+                    <div class="info-card">
+                        <div>Logs</div>
+                        <div class="info-value" id="logCount">0</div>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="btn" onclick="startMonitoring()">▶️ Start Monitoring</button>
+                    <button class="btn secondary" onclick="stopMonitoring()">⏹️ Stop Monitoring</button>
+                    <button class="btn secondary" onclick="viewAlerts()">🚨 View Alerts</button>
+                    <button class="btn secondary" onclick="viewLogs()">📋 View Logs</button>
+                </div>
+                
+                <div class="status-bar" id="monitoringStatus">Monitoring inactive</div>
+            </div>
+            
+            <!-- Settings Section -->
+            <div id="settings" class="content-section" style="display: none;">
+                <div class="section-title">System Settings</div>
+                
+                <div class="widget">
+                    <h4>Display Settings</h4>
+                    <div class="quick-actions">
+                        <button class="btn secondary" onclick="changeBrightness(-10)">🔅 Dimmer</button>
+                        <button class="btn secondary" onclick="changeBrightness(10)">🔆 Brighter</button>
+                        <button class="btn secondary" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                    </div>
+                </div>
+                
+                <div class="widget">
+                    <h4>System Settings</h4>
+                    <div class="quick-actions">
+                        <button class="btn secondary" onclick="changeLanguage()">🌐 Language</button>
+                        <button class="btn secondary" onclick="changeUnits()">📏 Units</button>
+                        <button class="btn secondary" onclick="resetSettings()">🔄 Reset</button>
+                    </div>
+                </div>
+                
+                <div class="widget">
+                    <h4>Layer Status</h4>
+                    <div class="layer-status" id="layerStatus">
+                        <!-- Layer statuses will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h3 style="margin-bottom: 20px; color: #4CAF50;">Quick Info</h3>
+            
+            <div class="widget">
+                <h4>Current Status</h4>
+                <div id="quickStatus">
+                    <p>System: Online</p>
+                    <p>Speed: <span id="sideSpeed">65 mph</span></p>
+                    <p>Fuel: <span id="sideFuel">75%</span></p>
+                    <p>Navigation: Inactive</p>
+                </div>
+            </div>
+            
+            <div class="widget">
+                <h4>Recent Alerts</h4>
+                <div id="recentAlerts">
+                    <p style="color: #4CAF50;">No alerts</p>
+                </div>
+            </div>
+            
+            <div class="widget">
+                <h4>Layer Health</h4>
+                <div id="layerHealth">
+                    <div class="layer-item">
+                        <span>Layer 1</span>
+                        <span style="color: #4CAF50;">●</span>
+                    </div>
+                    <div class="layer-item">
+                        <span>Layer 2</span>
+                        <span style="color: #4CAF50;">●</span>
+                    </div>
+                    <div class="layer-item">
+                        <span>Layer 3</span>
+                        <span style="color: #4CAF50;">●</span>
+                    </div>
+                    <div class="layer-item">
+                        <span>Layer 4</span>
+                        <span style="color: #4CAF50;">●</span>
+                    </div>
+                    <div class="layer-item">
+                        <span>Layer 5</span>
+                        <span style="color: #4CAF50;">●</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <span>Unified Infotainment System v1.0 | All Layers Integrated | </span>
+            <span id="systemTime">--:--:--</span>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 'dashboard';
+        let systemData = {
+            media: { playing: false, volume: 65, song: 'Summer Breeze', artist: 'Smooth Jazz Collection' },
+            climate: { temperature: 72, ac: false, heater: false },
+            vehicle: { speed: 65, fuel: 75, rpm: 2400, temp: 195 },
+            navigation: { active: false, destination: '', eta: '', distance: '' }
+        };
+        
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(el => el.style.display = 'none');
+            
+            // Show selected section
+            document.getElementById(section).style.display = 'block';
+            
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+            
+            currentSection = section;
+        }
+        
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'});
+            document.getElementById('systemTime').textContent = timeString;
+        }
+        
+        function updateVehicleData() {
+            // Simulate data changes
+            systemData.vehicle.speed = Math.floor(Math.random() * 40) + 50;
+            systemData.vehicle.rpm = Math.floor(Math.random() * 1000) + 2000;
+            systemData.vehicle.fuel = Math.max(0, systemData.vehicle.fuel - Math.random() * 0.1);
+            
+            // Update all displays
+            document.getElementById('dashSpeed').textContent = systemData.vehicle.speed + ' mph';
+            document.getElementById('dashFuel').textContent = Math.floor(systemData.vehicle.fuel) + '%';
+            document.getElementById('dashRPM').textContent = systemData.vehicle.rpm;
+            document.getElementById('vehicleSpeed').textContent = systemData.vehicle.speed + ' mph';
+            document.getElementById('vehicleFuel').textContent = Math.floor(systemData.vehicle.fuel) + '%';
+            document.getElementById('vehicleRPM').textContent = systemData.vehicle.rpm;
+            document.getElementById('sideSpeed').textContent = systemData.vehicle.speed + ' mph';
+            document.getElementById('sideFuel').textContent = Math.floor(systemData.vehicle.fuel) + '%';
+        }
+        
+        // Media controls
+        function mediaControl(action) {
+            switch(action) {
+                case 'play':
+                    systemData.media.playing = !systemData.media.playing;
+                    document.getElementById('playBtn').textContent = systemData.media.playing ? '⏸' : '▶';
+                    updateStatus(`Music ${systemData.media.playing ? 'playing' : 'paused'}`);
+                    break;
+                case 'next':
+                case 'prev':
+                    updateStatus(`${action} track`);
+                    break;
+            }
+        }
+        
+        function changeSource(source) {
+            updateStatus(`Audio source changed to ${source}`);
+        }
+        
+        // Climate controls
+        function adjustTemp(change) {
+            systemData.climate.temperature += change;
+            document.getElementById('climateTemp').textContent = systemData.climate.temperature + '°F';
+            updateStatus(`Temperature ${change > 0 ? 'increased' : 'decreased'} to ${systemData.climate.temperature}°F`);
+        }
+        
+        function toggleAC() {
+            systemData.climate.ac = !systemData.climate.ac;
+            updateStatus(`Air conditioning ${systemData.climate.ac ? 'enabled' : 'disabled'}`);
+        }
+        
+        function toggleHeater() {
+            systemData.climate.heater = !systemData.climate.heater;
+            updateStatus(`Heater ${systemData.climate.heater ? 'enabled' : 'disabled'}`);
+        }
+        
+        function setFanSpeed(speed) {
+            updateStatus(`Fan speed set to ${speed}`);
+        }
+        
+        function toggleDefrost() {
+            updateStatus('Defrost toggled');
+        }
+        
+        function toggleRecirculate() {
+            updateStatus('Air recirculation toggled');
+        }
+        
+        // Navigation
+        function navigateTo(destination) {
+            systemData.navigation.destination = destination;
+            systemData.navigation.active = true;
+            document.getElementById('navStatus').textContent = `Navigating to ${destination}`;
+            updateStatus(`Navigation set to ${destination}`);
+        }
+        
+        function findNearby(type) {
+            document.getElementById('navStatus').textContent = `Finding nearby ${type}...`;
+            updateStatus(`Searching for nearby ${type}`);
+        }
+        
+        function startNavigation() {
+            const destination = document.getElementById('destinationInput').value;
+            if (destination) {
+                navigateTo(destination);
+            } else {
+                updateStatus('Please enter a destination');
+            }
+        }
+        
+        // Vehicle functions
+        function runDiagnostics() {
+            updateStatus('Running vehicle diagnostics...');
+            setTimeout(() => updateStatus('Diagnostics complete - No issues found'), 2000);
+        }
+        
+        function checkMaintenance() {
+            updateStatus('Next service due in 2,500 miles');
+        }
+        
+        function emergencyCall() {
+            updateStatus('🚨 EMERGENCY CALL INITIATED 🚨');
+        }
+        
+        function vehicleSettings() {
+            updateStatus('Vehicle settings opened');
+        }
+        
+        // Voice assistant
+        function startListening() {
+            document.getElementById('voiceStatus').textContent = 'Listening...';
+            updateStatus('Voice assistant activated');
+        }
+        
+        function stopListening() {
+            document.getElementById('voiceStatus').textContent = 'Ready';
+            updateStatus('Voice assistant deactivated');
+        }
+        
+        function toggleVoice() {
+            updateStatus('Voice output toggled');
+        }
+        
+        function testCommand(command) {
+            document.getElementById('lastCommand').textContent = command;
+            document.getElementById('lastResponse').textContent = `Processing: ${command}`;
+            updateStatus(`Voice command: ${command}`);
+        }
+        
+        // Monitoring
+        function startMonitoring() {
+            document.getElementById('monitoringStatus').textContent = 'Monitoring active';
+            updateStatus('Data monitoring started');
+        }
+        
+        function stopMonitoring() {
+            document.getElementById('monitoringStatus').textContent = 'Monitoring inactive';
+            updateStatus('Data monitoring stopped');
+        }
+        
+        function viewAlerts() {
+            updateStatus('Viewing system alerts');
+        }
+        
+        function viewLogs() {
+            updateStatus('Viewing system logs');
+        }
+        
+        // System functions
+        function connectToLayers() {
+            updateStatus('Connecting to all system layers...');
+            setTimeout(() => updateStatus('All layers connected successfully'), 1500);
+        }
+        
+        function runSystemCheck() {
+            updateStatus('Running system health check...');
+            setTimeout(() => updateStatus('System check complete - All systems operational'), 2000);
+        }
+        
+        function toggleDarkMode() {
+            updateStatus('Theme toggled');
+        }
+        
+        function emergencyMode() {
+            updateStatus('🚨 EMERGENCY MODE ACTIVATED 🚨');
+        }
+        
+        function changeBrightness(delta) {
+            updateStatus(`Brightness ${delta > 0 ? 'increased' : 'decreased'}`);
+        }
+        
+        function changeLanguage() {
+            updateStatus('Language settings opened');
+        }
+        
+        function changeUnits() {
+            updateStatus('Unit preferences updated');
+        }
+        
+        function resetSettings() {
+            updateStatus('Settings reset to defaults');
+        }
+        
+        function updateStatus(message) {
+            const statusElements = ['vehicleStatus', 'navStatus', 'monitoringStatus'];
+            statusElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element && currentSection === id.replace('Status', '')) {
+                    element.textContent = message;
+                }
+            });
+            console.log(`Status: ${message}`);
+        }
+        
+        // Initialize
+        setInterval(updateTime, 1000);
+        setInterval(updateVehicleData, 3000);
+        updateTime();
+        updateVehicleData();
+        updateStatus('Unified Infotainment System ready');
+    </script>
+</body>
+</html>

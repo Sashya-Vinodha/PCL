@@ -1,0 +1,20 @@
+# Flask and web dependencies
+Flask==2.3.3
+flask-cors==4.0.0
+
+# Data monitoring dependencies
+psutil==5.9.5
+
+# Voice assistant dependencies (optional - install if using voice features)
+SpeechRecognition==3.10.0
+pyttsx3==2.90
+pyaudio==0.2.11
+
+# Additional dependencies
+requests==2.31.0
+python-dateutil==2.8.2
+
+# Development dependencies
+pytest==7.4.2
+black==23.7.0
+flake8==6.0.0
