@@ -3,8 +3,13 @@
 # Infotainment System Startup Script
 # This script starts all backend services for the infotainment system
 
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+cd "$SCRIPT_DIR"
+
 echo "🚗 Starting Infotainment System - All Layers"
 echo "=============================================="
+echo "Working from: $SCRIPT_DIR"
 
 # Function to kill background processes on exit
 cleanup() {
@@ -21,29 +26,33 @@ echo "📊 Starting Layer 1 - Simulation UI Backend (Port 5001)..."
 cd layer1-simulation-ui/backend
 python app.py &
 LAYER1_PID=$!
+cd ../..
 
 echo "📈 Starting Layer 2 - Data Monitoring Backend (Port 5002)..."
-cd ../../layer2-data-monitoring/backend
+cd layer2-data-monitoring/backend
 python monitor.py &
 LAYER2_PID=$!
+cd ../..
 
 echo "🎙️ Starting Layer 3 - Voice Assistant Backend (Port 5003)..."
-cd ../../layer3-ai-voice-assistant/backend
+cd layer3-ai-voice-assistant/backend
 python voice_assistant.py &
 LAYER3_PID=$!
+cd ../..
 
 echo "🎛️ Starting Layer 4 - Infotainment Control Backend (Port 5004)..."
-cd ../../layer4-infotainment-control/backend
+cd layer4-infotainment-control/backend
 python control.py &
 LAYER4_PID=$!
+cd ../..
 
 echo ""
 echo "✅ All backend services started!"
 echo ""
 echo "🌐 Frontend URLs:"
-echo "   Layer 1 (Simulation): file://$(pwd)/../../layer1-simulation-ui/frontend/index.html"
-echo "   Layer 4 (Control):    file://$(pwd)/../../layer4-infotainment-control/frontend/index.html"
-echo "   Layer 5 (Integration): file://$(pwd)/../../layer5-ui-integration/frontend/index.html"
+echo "   Layer 1 (Simulation): file://$(pwd)/layer1-simulation-ui/frontend/index.html"
+echo "   Layer 4 (Control):    file://$(pwd)/layer4-infotainment-control/frontend/index.html"
+echo "   Layer 5 (Integration): file://$(pwd)/layer5-ui-integration/frontend/index.html"
 echo ""
 echo "🔗 Backend APIs:"
 echo "   Layer 1: http://localhost:5001"
