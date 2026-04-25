@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triple-Layer Panoramic Infotainment System</title>
+    <style>
+        :root {
+            --accent-color: #00b4ff;
+            --glow-color: rgba(0, 180, 255, 0.4);
+            --card-bg: rgba(5, 10, 25, 0.3);
+            --card-border: rgba(0, 180, 255, 0.35);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            min-height: 100vh;
+            background: #000000;
+            overflow-x: hidden;
+        }
+        
+        .panoramic-container {
+            display: grid;
+            grid-template-areas: "passenger-zone central-zone driver-zone";
+            grid-template-columns: 350px 1fr 350px;
+            min-height: 100vh;
+            gap: 0;
+            background: linear-gradient(135deg, #000000 0%, #0a0a1a 25%, #0d0d28 50%, #0a0a1a 75%, #000000 100%);
+        }
+        
+        .driver-zone {
+            grid-area: driver-zone;
+            background: rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 180, 255, 0.25);
+            padding: 20px;
+        }
+        
+        .central-zone {
+            grid-area: central-zone;
+            background: transparent;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .passenger-zone {
+            grid-area: passenger-zone;
+            background: rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(0, 180, 255, 0.25);
+            padding: 20px;
+        }
+        
+        .speedometer {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            border-radius: 50%;
+            background: conic-gradient(from 135deg, #00b4ff, #0080ff, #0050ff, #00b4ff);
+            border: 2px solid rgba(0, 180, 255, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 0 40px rgba(0, 180, 255, 0.3),
+                inset 0 0 30px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+        
+        .speedometer::before {
+            content: '';
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+        }
+        
+        .speed-value {
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-shadow: 0 0 30px var(--glow-color);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .floating-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            flex-grow: 1;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(0, 180, 255, 0.1),
+                inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.7), 
+                0 0 40px var(--glow-color),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--accent-color), #0060ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2em;
+            box-shadow: 0 0 20px rgba(0, 180, 255, 0.4);
+        }
+        
+        .card-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        .bottom-nav-bar {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+            background: rgba(5, 10, 20, 0.6);
+            backdrop-filter: blur(30px);
+            border-radius: 50px;
+            padding: 12px 30px;
+            border: 1px solid rgba(0, 180, 255, 0.4);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.8),
+                0 0 40px rgba(0, 180, 255, 0.2),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-glyph {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: rgba(0, 10, 30, 0.5);
+            border: 1px solid rgba(0, 180, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.4em;
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-glyph:hover,
+        .nav-glyph.active {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background: rgba(0, 180, 255, 0.15);
+            box-shadow: 
+                0 6px 20px rgba(0, 0, 0, 0.7),
+                0 0 30px var(--glow-color),
+                inset 0 1px 2px rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .menu-drawer {
+            position: fixed;
+            left: -300px;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(5, 10, 20, 0.95);
+            backdrop-filter: blur(40px);
+            border-right: 1px solid rgba(0, 180, 255, 0.4);
+            padding: 30px 20px;
+            transition: left 0.4s ease;
+            z-index: 200;
+            box-shadow: 4px 0 40px rgba(0, 0, 0, 0.9);
+        }
+        
+        .menu-drawer.open {
+            left: 0;
+        }
+        
+        .menu-section {
+            margin-bottom: 25px;
+        }
+        
+        .menu-section-title {
+            color: var(--accent-color);
+            font-size: 0.85em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            opacity: 0.8;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin: 6px 0;
+            background: rgba(0, 10, 30, 0.3);
+            border: 1px solid rgba(0, 180, 255, 0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .menu-item:hover {
+            background: rgba(0, 180, 255, 0.15);
+            border-color: var(--accent-color);
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 180, 255, 0.3);
+        }
+        
+        .menu-item-icon {
+            margin-right: 12px;
+            font-size: 1.2em;
+        }
+        
+        .control-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(0, 10, 30, 0.5);
+            border: 1px solid rgba(0, 180, 255, 0.4);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .control-btn:hover {
+            border-color: var(--accent-color);
+            background: rgba(0, 180, 255, 0.2);
+            box-shadow: 
+                0 6px 20px rgba(0, 0, 0, 0.6),
+                0 0 20px rgba(0, 180, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .data-item {
+            background: rgba(0, 10, 30, 0.4);
+            border: 1px solid rgba(0, 180, 255, 0.25);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        .data-label {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 5px;
+        }
+        
+        .data-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        .system-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--accent-color), #0080ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        /* Navigation UI Module Styles */
+        .navigation-module {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 10, 30, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .map-container {
+            flex: 2;
+            background: linear-gradient(135deg, #0a0f1a, #0d1520);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(0, 180, 255, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a1428, #0d1a30);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 180, 255, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 180, 255, 0.08) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: mapMove 10s linear infinite;
+        }
+        
+        @keyframes mapMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(20px, 20px); }
+        }
+        
+        @keyframes routeProgress {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .nav-context {
+            flex: 1;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .context-card {
+            background: rgba(0, 10, 30, 0.4);
+            border: 1px solid rgba(0, 180, 255, 0.25);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Media UI Module Styles */
+        .media-module {
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        
+        .media-module.expanded {
+            grid-column: 1 / -1;
+            transform: scale(1.05);
+            z-index: 10;
+        }
+        
+        .album-artwork {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-color), #0060ff, #0040cc);
+            border-radius: 10px;
+            margin: 0 auto 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 180, 255, 0.3);
+            border: 1px solid rgba(0, 180, 255, 0.4);
+        }
+        
+        .media-module.expanded .album-artwork {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+        }
+        
+        .waveform-animation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            height: 30px;
+            margin: 15px 0;
+        }
+        
+        .wave-bar {
+            width: 3px;
+            background: var(--accent-color);
+            border-radius: 2px;
+            animation: waveform 1.5s ease-in-out infinite;
+        }
+        
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes waveform {
+            0%, 100% { height: 10px; opacity: 0.5; }
+            50% { height: 25px; opacity: 1; }
+        }
+        
+        .eq-visual {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 15px auto;
+            display: none;
+        }
+        
+        .media-module.expanded .eq-visual {
+            display: block;
+        }
+        
+        .sound-ring {
+            position: absolute;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            opacity: 0;
+            animation: soundPulse 2s ease-out infinite;
+        }
+        
+        .sound-ring:nth-child(1) { 
+            width: 30px; height: 30px; 
+            top: 35px; left: 35px;
+        }
+        .sound-ring:nth-child(2) { 
+            width: 50px; height: 50px; 
+            top: 25px; left: 25px;
+            animation-delay: 0.3s;
+        }
+        .sound-ring:nth-child(3) { 
+            width: 70px; height: 70px; 
+            top: 15px; left: 15px;
+            animation-delay: 0.6s;
+        }
+        
+        @keyframes soundPulse {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.2); opacity: 0; }
+        }
+        
+        /* Vehicle UI Module Styles */
+        .vehicle-module {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .car-render {
+            background: rgba(0, 10, 30, 0.4);
+            border: 1px solid rgba(0, 180, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .car-svg {
+            width: 200px;
+            height: 120px;
+            margin: 0 auto;
+        }
+        
+        .energy-flow {
+            position: absolute;
+            top: 50%;
+            left: 20%;
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-color), transparent, var(--accent-color));
+            animation: energyPulse 2s ease-in-out infinite;
+            border-radius: 1px;
+        }
+        
+        @keyframes energyPulse {
+            0%, 100% { opacity: 0.3; transform: scaleX(0.8); }
+            50% { opacity: 1; transform: scaleX(1.2); }
+        }
+        
+        .diagnostics-card {
+            background: rgba(0, 10, 30, 0.4);
+            border: 1px solid rgba(0, 180, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .diagnostic-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .diagnostic-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4CAF50;
+            box-shadow: 0 0 10px #4CAF50;
+        }
+        
+        .status-indicator.warning {
+            background: #FF9800;
+            box-shadow: 0 0 10px #FF9800;
+        }
+        
+        .status-indicator.critical {
+            background: #F44336;
+            box-shadow: 0 0 10px #F44336;
+        }
+        
+        @media (max-width: 1024px) {
+            .panoramic-container {
+                grid-template-areas: 
+                    "central-zone"
+                    "driver-zone"
+                    "passenger-zone";
+                grid-template-columns: 1fr;
+            }
+            
+            .driver-zone, .passenger-zone {
+                border: none;
+                border-top: 1px solid rgba(0, 245, 255, 0.2);
+            }
+            
+            .media-module.expanded {
+                transform: none;
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Drawer -->
+    <div class="menu-drawer" id="menuDrawer">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h2 style="color: var(--accent-color); margin: 0;">Menu</h2>
+            <button class="control-btn" onclick="toggleMenu()" style="padding: 8px 16px; margin: 0;">✕</button>
+        </div>
+        
+        <div class="menu-section">
+            <div class="menu-section-title">All Apps</div>
+            <div class="menu-item" onclick="openApp('weather')">
+                <span class="menu-item-icon">🌤️</span>
+                <span>Weather</span>
+            </div>
+            <div class="menu-item" onclick="openApp('phone')">
+                <span class="menu-item-icon">📱</span>
+                <span>Phone</span>
+            </div>
+            <div class="menu-item" onclick="openApp('messages')">
+                <span class="menu-item-icon">💬</span>
+                <span>Messages</span>
+            </div>
+            <div class="menu-item" onclick="openApp('calendar')">
+                <span class="menu-item-icon">📅</span>
+                <span>Calendar</span>
+            </div>
+        </div>
+        
+        <div class="menu-section">
+            <div class="menu-section-title">Infotainment</div>
+            <div class="menu-item" onclick="setActiveNav(null, 'media')">
+                <span class="menu-item-icon">🎵</span>
+                <span>Media Player</span>
+            </div>
+            <div class="menu-item" onclick="setActiveNav(null, 'navigation')">
+                <span class="menu-item-icon">🗺️</span>
+                <span>Navigation</span>
+            </div>
+            <div class="menu-item" onclick="setActiveNav(null, 'climate')">
+                <span class="menu-item-icon">🌡️</span>
+                <span>Climate</span>
+            </div>
+        </div>
+        
+        <div class="menu-section">
+            <div class="menu-section-title">Vehicle</div>
+            <div class="menu-item" onclick="setActiveNav(null, 'vehicle')">
+                <span class="menu-item-icon">🚗</span>
+                <span>Vehicle Status</span>
+            </div>
+            <div class="menu-item" onclick="openApp('settings')">
+                <span class="menu-item-icon">⚙️</span>
+                <span>Settings</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav-bar">
+        <div class="nav-glyph" onclick="toggleMenu()" title="Menu">☰</div>
+        <div class="nav-glyph active" onclick="setActiveNav(this, 'dashboard')" title="Home">�</div>
+        <div class="nav-glyph" onclick="setActiveNav(this, 'media')" title="Media">🎵</div>
+        <div class="nav-glyph" onclick="setActiveNav(this, 'navigation')" title="Navigation">🗺️</div>
+        <div class="nav-glyph" onclick="setActiveNav(this, 'climate')" title="Climate">❄️</div>
+    </div>
+
+    <div class="panoramic-container">
+        <div class="driver-zone">
+            <div style="margin-bottom: 15px; color: rgba(255, 255, 255, 0.5); font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; text-align: center;">Driver Cluster</div>
+            
+            <div class="speedometer">
+                <div class="speed-value" id="speedValue">65</div>
+            </div>
+            <p style="text-align: center; margin-bottom: 10px; color: rgba(255, 255, 255, 0.6); font-size: 0.9em; letter-spacing: 2px;">MPH</p>
+            
+            <!-- RPM Gauge -->
+            <div style="width: 140px; height: 140px; margin: 20px auto; border-radius: 50%; background: conic-gradient(from 135deg, #0040cc, #0060ff, #00b4ff, #0060ff, #0040cc); border: 2px solid rgba(0, 180, 255, 0.5); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(0, 180, 255, 0.25), inset 0 0 20px rgba(0, 0, 0, 0.8); position: relative;">
+                <div style="position: absolute; width: 110px; height: 110px; border-radius: 50%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px);"></div>
+                <div style="position: relative; z-index: 1; text-align: center;">
+                    <div style="font-size: 1.8em; font-weight: bold; color: var(--accent-color); text-shadow: 0 0 20px var(--glow-color);" id="rpmValue">2400</div>
+                    <div style="font-size: 0.7em; color: rgba(255, 255, 255, 0.5); letter-spacing: 2px;">RPM</div>
+                </div>
+            </div>
+            
+            <div class="data-grid">
+                <div class="data-item">
+                    <div class="data-label">Fuel</div>
+                    <div class="data-value" id="fuelValue">75%</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Temp</div>
+                    <div class="data-value" id="tempValue">195°F</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Battery</div>
+                    <div class="data-value" id="batteryValue">98%</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Range</div>
+                    <div class="data-value">280mi</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="central-zone">
+            <h1 class="system-title">Panoramic Infotainment</h1>
+            <p style="text-align: center; color: rgba(255, 255, 255, 0.7); margin-bottom: 30px;">Triple-Layer 8K OLED Display System</p>
+            
+            <div class="floating-cards">
+                <div class="card media-module" id="mediaModule">
+                    <div class="card-header">
+                        <div class="card-icon">🎵</div>
+                        <div class="card-title">Media Center</div>
+                        <button class="control-btn" style="margin-left: auto; padding: 5px 10px;" onclick="toggleMediaExpansion()">⤢</button>
+                    </div>
+                    
+                    <!-- Adaptive Album Artwork -->
+                    <div class="album-artwork" onclick="toggleMediaExpansion()">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2em;">🎼</div>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 15px 0;">
+                        <div style="font-size: 1.1em; color: var(--accent-color); margin-bottom: 5px;" id="currentSong">Summer Breeze</div>
+                        <div style="color: rgba(255, 255, 255, 0.7); font-size: 0.9em;" id="currentArtist">Smooth Jazz Collection</div>
+                    </div>
+                    
+                    <!-- Waveform Animation -->
+                    <div class="waveform-animation" id="waveform" style="display: none;">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                    
+                    <!-- Smart EQ Visual -->
+                    <div class="eq-visual">
+                        <div class="sound-ring"></div>
+                        <div class="sound-ring"></div>
+                        <div class="sound-ring"></div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--accent-color);">🔊</div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: center; gap: 10px;">
+                        <button class="control-btn" onclick="mediaControl('prev')">⏮</button>
+                        <button class="control-btn" onclick="mediaControl('play')" id="playBtn">⏯</button>
+                        <button class="control-btn" onclick="mediaControl('next')">⏭</button>
+                    </div>
+                    
+                    <!-- Future Sound Zones Implementation -->
+                    <!-- 
+                    TODO: Future Sound Zones Feature
+                    - Individual audio stream control for each passenger
+                    - Zone-specific volume and EQ settings
+                    - Bluetooth pairing per zone
+                    - Independent audio source selection
+                    Example structure:
+                    <div class="sound-zones">
+                        <div class="zone-control" data-zone="driver">Driver Zone</div>
+                        <div class="zone-control" data-zone="passenger">Passenger Zone</div>
+                        <div class="zone-control" data-zone="rear-left">Rear Left</div>
+                        <div class="zone-control" data-zone="rear-right">Rear Right</div>
+                    </div>
+                    -->
+                </div>
+
+                <div class="card navigation-module">
+                    <div class="card-header">
+                        <div class="card-icon">🗺️</div>
+                        <div class="card-title">Navigation</div>
+                    </div>
+                    
+                    <!-- 3D Map Integration -->
+                    <div class="map-container">
+                        <div class="map-placeholder">
+                            <div class="map-grid"></div>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--accent-color); font-size: 1.5em;">
+                                🎯 3D Satellite View
+                            </div>
+                            <!-- Route indicator -->
+                            <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; height: 3px; background: linear-gradient(90deg, var(--accent-color), #8A2BE2); border-radius: 2px; animation: routeProgress 5s ease-in-out infinite;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Split-View Context -->
+                    <div class="nav-context">
+                        <div class="context-card">
+                            <div style="font-size: 0.8em; color: rgba(255, 255, 255, 0.7);">ETA</div>
+                            <div style="color: var(--accent-color); font-weight: bold;" id="navETA">15 min</div>
+                        </div>
+                        <div class="context-card">
+                            <div style="font-size: 0.8em; color: rgba(255, 255, 255, 0.7);">Range</div>
+                            <div style="color: var(--accent-color); font-weight: bold;" id="navRange">280 mi</div>
+                        </div>
+                        <div class="context-card">
+                            <div style="font-size: 0.8em; color: rgba(255, 255, 255, 0.7);">POI</div>
+                            <div style="color: var(--accent-color); font-weight: bold;">⛽ 0.5mi</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🌡️</div>
+                        <div class="card-title">Climate Control</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2em; color: var(--accent-color); margin: 15px 0;" id="climateTemp">72°F</div>
+                        <div style="display: flex; justify-content: center; gap: 10px;">
+                            <button class="control-btn" onclick="adjustTemp(-1)">➖</button>
+                            <button class="control-btn" onclick="adjustTemp(1)">➕</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card vehicle-module">
+                    <div class="card-header">
+                        <div class="card-icon">🚗</div>
+                        <div class="card-title">Vehicle Status</div>
+                    </div>
+                    
+                    <!-- 3D Car Render -->
+                    <div class="car-render">
+                        <div style="color: var(--accent-color); font-size: 0.9em; margin-bottom: 10px;">Live Vehicle Status</div>
+                        <svg class="car-svg" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Car Body -->
+                            <rect x="40" y="45" width="120" height="35" rx="10" fill="var(--accent-color)" opacity="0.7"/>
+                            <rect x="30" y="50" width="140" height="25" rx="8" fill="var(--accent-color)" opacity="0.5"/>
+                            
+                            <!-- Windows -->
+                            <rect x="50" y="35" width="30" height="15" rx="3" fill="#87CEEB" opacity="0.8"/>
+                            <rect x="90" y="35" width="30" height="15" rx="3" fill="#87CEEB" opacity="0.8"/>
+                            <rect x="130" y="35" width="20" height="15" rx="3" fill="#87CEEB" opacity="0.8"/>
+                            
+                            <!-- Wheels -->
+                            <circle cx="60" cy="85" r="12" fill="#333" stroke="var(--accent-color)" stroke-width="2" id="wheel1"/>
+                            <circle cx="140" cy="85" r="12" fill="#333" stroke="var(--accent-color)" stroke-width="2" id="wheel2"/>
+                            
+                            <!-- Doors (interactive) -->
+                            <rect x="25" y="52" width="3" height="20" fill="#4CAF50" rx="1" id="doorFL" class="status-indicator"/>
+                            <rect x="172" y="52" width="3" height="20" fill="#4CAF50" rx="1" id="doorFR" class="status-indicator"/>
+                            <rect x="25" y="75" width="3" height="20" fill="#4CAF50" rx="1" id="doorRL" class="status-indicator"/>
+                            <rect x="172" y="75" width="3" height="20" fill="#4CAF50" rx="1" id="doorRR" class="status-indicator"/>
+                            
+                            <!-- Airflow indicators -->
+                            <circle cx="100" cy="25" r="3" fill="var(--accent-color)" opacity="0.6">
+                                <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+                            </circle>
+                            <circle cx="110" cy="25" r="3" fill="var(--accent-color)" opacity="0.6">
+                                <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" begin="0.2s" repeatCount="indefinite"/>
+                            </circle>
+                            <circle cx="90" cy="25" r="3" fill="var(--accent-color)" opacity="0.6">
+                                <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" begin="0.4s" repeatCount="indefinite"/>
+                            </circle>
+                        </svg>
+                        
+                        <!-- EV Mode Energy Flow -->
+                        <div class="energy-flow" id="energyFlow" style="display: none;"></div>
+                        
+                        <div style="display: flex; justify-content: space-around; margin-top: 15px; font-size: 0.8em;">
+                            <span>🚪 Doors: <span style="color: #4CAF50;">Secure</span></span>
+                            <span>🛞 Tires: <span style="color: #4CAF50;">OK</span></span>
+                            <span>🌡️ Climate: <span style="color: var(--accent-color);">Auto</span></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Predictive Diagnostics -->
+                    <div class="diagnostics-card">
+                        <div style="color: var(--accent-color); font-weight: bold; margin-bottom: 10px;">Predictive Diagnostics</div>
+                        <div class="diagnostic-item">
+                            <span>Engine Health</span>
+                            <div class="status-indicator"></div>
+                        </div>
+                        <div class="diagnostic-item">
+                            <span>Brake Pads</span>
+                            <div class="status-indicator warning"></div>
+                        </div>
+                        <div class="diagnostic-item">
+                            <span>Battery Health</span>
+                            <div class="status-indicator"></div>
+                        </div>
+                        <div class="diagnostic-item">
+                            <span>Next Service</span>
+                            <span style="color: var(--accent-color); font-size: 0.8em;">2,100 mi</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="passenger-zone">
+            <div style="margin-bottom: 15px; color: rgba(255, 255, 255, 0.5); font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px;">Trip Overview</div>
+            
+            <div class="data-grid" style="margin-bottom: 25px;">
+                <div class="data-item">
+                    <div class="data-label">Miles</div>
+                    <div class="data-value">142</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Duration</div>
+                    <div class="data-value">2.5h</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Avg MPG</div>
+                    <div class="data-value">32</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Fuel Cost</div>
+                    <div class="data-value">$18</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px; color: rgba(255, 255, 255, 0.5); font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px;">Quick Access</div>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="control-btn" onclick="openApp('weather')" style="display: flex; align-items: center; justify-content: flex-start; padding: 12px 18px; width: 100%;">
+                    <span style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(45deg, var(--accent-color), #0060ff); display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.1em;">🌤️</span>
+                    <span>Weather</span>
+                </button>
+                <button class="control-btn" onclick="openApp('phone')" style="display: flex; align-items: center; justify-content: flex-start; padding: 12px 18px; width: 100%;">
+                    <span style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(45deg, var(--accent-color), #0060ff); display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.1em;">📱</span>
+                    <span>Phone</span>
+                </button>
+                <button class="control-btn" onclick="openApp('messages')" style="display: flex; align-items: center; justify-content: flex-start; padding: 12px 18px; width: 100%;">
+                    <span style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(45deg, var(--accent-color), #0060ff); display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.1em;">�</span>
+                    <span>Messages</span>
+                </button>
+                <button class="control-btn" onclick="openApp('settings')" style="display: flex; align-items: center; justify-content: flex-start; padding: 12px 18px; width: 100%;">
+                    <span style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(45deg, var(--accent-color), #0060ff); display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.1em;">⚙️</span>
+                    <span>Settings</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isPlaying = false;
+        let currentTemp = 72;
+        let isMediaExpanded = false;
+        let isEVMode = false;
+        let isMenuOpen = false;
+        let vehicleData = { 
+            speed: 65, 
+            rpm: 2400, 
+            fuel: 75, 
+            temp: 195, 
+            battery: 98,
+            doors: { fl: true, fr: true, rl: true, rr: true },
+            tiresPressure: [32, 32, 31, 32],
+            range: 280
+        };
+
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            const menuDrawer = document.getElementById('menuDrawer');
+            if (isMenuOpen) {
+                menuDrawer.classList.add('open');
+            } else {
+                menuDrawer.classList.remove('open');
+            }
+        }
+
+        function setActiveNav(element, section) {
+            // Close menu if open
+            if (isMenuOpen) {
+                toggleMenu();
+            }
+            
+            if (element) {
+                document.querySelectorAll('.nav-glyph').forEach(glyph => {
+                    glyph.classList.remove('active');
+                });
+                element.classList.add('active');
+            }
+            
+            // Show/hide module-specific features based on navigation
+            switch(section) {
+                case 'media':
+                    highlightModule('mediaModule');
+                    break;
+                case 'navigation':
+                    highlightModule('navigationModule');
+                    updateNavigationData();
+                    break;
+                case 'vehicle':
+                    highlightModule('vehicleModule');
+                    toggleEVMode();
+                    break;
+                default:
+                    clearModuleHighlights();
+            }
+            
+            console.log('Switched to ' + section + ' section');
+        }
+
+        function highlightModule(moduleId) {
+            clearModuleHighlights();
+            const module = document.getElementById(moduleId);
+            if (module) {
+                module.style.border = '2px solid var(--accent-color)';
+                module.style.boxShadow = '0 0 30px var(--glow-color)';
+            }
+        }
+
+        function clearModuleHighlights() {
+            document.querySelectorAll('.card').forEach(card => {
+                card.style.border = '1px solid rgba(0, 245, 255, 0.3)';
+                card.style.boxShadow = '';
+            });
+        }
+
+        function toggleMediaExpansion() {
+            const mediaModule = document.getElementById('mediaModule');
+            const waveform = document.getElementById('waveform');
+            
+            isMediaExpanded = !isMediaExpanded;
+            
+            if (isMediaExpanded) {
+                mediaModule.classList.add('expanded');
+                waveform.style.display = 'flex';
+                if (isPlaying) {
+                    startWaveformAnimation();
+                }
+            } else {
+                mediaModule.classList.remove('expanded');
+                waveform.style.display = 'none';
+            }
+            
+            console.log('Media module ' + (isMediaExpanded ? 'expanded' : 'collapsed'));
+        }
+
+        function startWaveformAnimation() {
+            const waveform = document.getElementById('waveform');
+            if (waveform && isPlaying) {
+                waveform.style.opacity = '1';
+                // Waveform animation is handled by CSS
+            }
+        }
+
+        function stopWaveformAnimation() {
+            const waveform = document.getElementById('waveform');
+            if (waveform) {
+                waveform.style.opacity = '0.5';
+            }
+        }
+
+        function mediaControl(action) {
+            const playBtn = document.getElementById('playBtn');
+            switch(action) {
+                case 'play':
+                    isPlaying = !isPlaying;
+                    playBtn.textContent = isPlaying ? '⏸' : '⏯';
+                    
+                    if (isPlaying && isMediaExpanded) {
+                        startWaveformAnimation();
+                    } else {
+                        stopWaveformAnimation();
+                    }
+                    
+                    console.log('Music ' + (isPlaying ? 'playing' : 'paused'));
+                    break;
+                case 'next':
+                case 'prev':
+                    updateSong();
+                    console.log(action + ' track');
+                    break;
+            }
+        }
+
+        function toggleEVMode() {
+            isEVMode = !isEVMode;
+            const energyFlow = document.getElementById('energyFlow');
+            
+            if (energyFlow) {
+                energyFlow.style.display = isEVMode ? 'block' : 'none';
+            }
+            
+            console.log('EV Mode ' + (isEVMode ? 'enabled' : 'disabled'));
+        }
+
+        function updateNavigationData() {
+            // Simulate real-time navigation updates
+            const navETA = document.getElementById('navETA');
+            const navRange = document.getElementById('navRange');
+            
+            if (navETA && navRange) {
+                const randomMinutes = Math.floor(Math.random() * 10) + 10;
+                const randomRange = Math.floor(Math.random() * 50) + 250;
+                
+                navETA.textContent = randomMinutes + ' min';
+                navRange.textContent = randomRange + ' mi';
+            }
+        }
+
+        function simulateVehicleStateChanges() {
+            // Simulate door status changes (for demonstration)
+            const doors = ['doorFL', 'doorFR', 'doorRL', 'doorRR'];
+            const randomDoor = doors[Math.floor(Math.random() * doors.length)];
+            const doorElement = document.getElementById(randomDoor);
+            
+            if (doorElement && Math.random() > 0.9) {
+                // Randomly show door alerts (10% chance)
+                doorElement.setAttribute('fill', '#FF9800');
+                setTimeout(() => {
+                    doorElement.setAttribute('fill', '#4CAF50');
+                }, 2000);
+            }
+        }
+
+        function adjustTemp(change) {
+            currentTemp += change;
+            document.getElementById('climateTemp').textContent = currentTemp + '°F';
+            console.log('Temperature changed to ' + currentTemp + '°F');
+        }
+
+        function updateSong() {
+            const songs = [
+                { title: "Summer Breeze", artist: "Smooth Jazz Collection" },
+                { title: "Highway Dreams", artist: "Road Trip Classics" },
+                { title: "Digital Sunset", artist: "Electronic Vibes" },
+                { title: "City Lights", artist: "Urban Sounds" },
+                { title: "Neon Nights", artist: "Synthwave Sessions" },
+                { title: "Ocean Drive", artist: "Ambient Waves" },
+                { title: "Stellar Journey", artist: "Space Soundscapes" }
+            ];
+            
+            const randomSong = songs[Math.floor(Math.random() * songs.length)];
+            document.getElementById('currentSong').textContent = randomSong.title;
+            document.getElementById('currentArtist').textContent = randomSong.artist;
+        }
+
+        function openApp(app) {
+            console.log('Opening ' + app + ' app');
+            // Future integration with Layer 3 (AI Voice Assistant) and Layer 4 (Infotainment Control)
+        }
+
+        function updateVehicleData() {
+            // Update speed and basic vehicle data
+            vehicleData.speed = Math.floor(Math.random() * 40) + 50;
+            vehicleData.rpm = Math.floor(Math.random() * 1000) + 2000;
+            vehicleData.fuel = Math.max(20, vehicleData.fuel - Math.random() * 0.1);
+            vehicleData.temp = 190 + Math.floor(Math.random() * 20);
+            vehicleData.range = Math.max(100, vehicleData.range - Math.random() * 0.5);
+            
+            // Update UI elements
+            document.getElementById('speedValue').textContent = vehicleData.speed;
+            document.getElementById('rpmValue').textContent = vehicleData.rpm;
+            document.getElementById('fuelValue').textContent = Math.floor(vehicleData.fuel) + '%';
+            document.getElementById('tempValue').textContent = vehicleData.temp + '°F';
+            
+            // Update navigation range
+            const navRange = document.getElementById('navRange');
+            if (navRange) {
+                navRange.textContent = Math.floor(vehicleData.range) + ' mi';
+            }
+        }
+
+        // Initialize system
+        function initializeSystem() {
+            console.log('Triple-Layer Panoramic Display System Ready');
+            console.log('Enhanced UI Modules Loaded:');
+            console.log('- Navigation UI: 3D Map Integration with Split-View Context');
+            console.log('- Media UI: Adaptive Now Playing with Waveform & EQ Visuals');
+            console.log('- Vehicle UI: 3D Car Render with Predictive Diagnostics');
+            
+            // Set up intervals for real-time updates
+            setInterval(updateVehicleData, 3000);
+            setInterval(simulateVehicleStateChanges, 5000);
+            setInterval(updateNavigationData, 7000);
+        }
+
+        // Start the system when page loads
+        initializeSystem();
+    </script>
+</body>
+</html>
