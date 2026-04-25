@@ -37,8 +37,6 @@ WEATHER_ALERT_CONDITIONS = {"rain", "fog", "snow", "storm"}
 total_distance = 100
 distance_to_destination = total_distance
 distance_to_weather_event = 60  # Start > 30
-app = Flask(__name__)
-CORS(app)
 
 # Enhanced vehicle data with comprehensive metrics
 vehicle_data = {
@@ -252,15 +250,6 @@ def get_vehicle_data():
     
     return jsonify(vehicle_data)
 
-@app.route('/api/simulate-event', methods=['POST'])
-def simulate_event():
-    data = request.get_json()
-    event_type = data.get('event_type')
-    if event_type == 'reset':
-        vehicle_data["accident"] = False
-        weather_data["condition"] = "clear"
-        driver_behavior["alertness_status"] = "alert"
-        return jsonify({"status": "success", "message": "System reset"})
     # ...existing event logic...
     return jsonify({"status": "success", "message": f"Event {event_type} triggered"})
 @app.route('/api/vehicle-data', methods=['POST'])
@@ -986,13 +975,18 @@ def simulate_event():
             "authorization": FAST2SMS_API_KEY,
             "Content-Type": "application/json"
         }
-        payload = {
+        if not emergency_contacts:
+           print("No emergency contacts set")
+        else:
+            phone_numbers = ",".join(emergency_contacts)
+
+            payload = {
             "route": "q",
             "message": message,
             "language": "english",
             "flash": 0,
-            "numbers": FAST2SMS_PHONE_NUMBER
-        }
+            "numbers": phone_numbers
+        }   
 
         try:
             response = requests.post(FAST2SMS_API_URL, json=payload, headers=headers, timeout=10)
