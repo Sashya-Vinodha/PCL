@@ -5,6 +5,7 @@
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+PYTHON_BIN="/usr/local/bin/python3.11"
 cd "$SCRIPT_DIR"
 
 echo "🚗 Starting Infotainment System - All Layers"
@@ -24,25 +25,25 @@ trap cleanup SIGINT SIGTERM
 
 echo "📊 Starting Layer 1 - Simulation UI Backend (Port 5001)..."
 cd layer1-simulation-ui/backend
-python app.py &
+"$PYTHON_BIN" app.py &
 LAYER1_PID=$!
 cd ../..
 
 echo "📈 Starting Layer 2 - Data Monitoring Backend (Port 5002)..."
 cd layer2-data-monitoring/backend
-python monitor.py &
+"$PYTHON_BIN" monitor.py &
 LAYER2_PID=$!
 cd ../..
 
 echo "🎙️ Starting Layer 3 - Voice Assistant Backend (Port 5003)..."
 cd layer3-ai-voice-assistant/backend
-python voice_assistant.py &
+"$PYTHON_BIN" voice_assistant.py &
 LAYER3_PID=$!
 cd ../..
 
 echo "🎛️ Starting Layer 4 - Infotainment Control Backend (Port 5004)..."
 cd layer4-infotainment-control/backend
-python control.py &
+"$PYTHON_BIN" control.py &
 LAYER4_PID=$!
 cd ../..
 
