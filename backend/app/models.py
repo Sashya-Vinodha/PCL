@@ -15,4 +15,6 @@ class VehicleState(BaseModel):
     temperature: float = 0.0
     weather_desc: str = "Fetching..."
     odometer: float = 15234.5
-    is_navigating: bool = False    # NEW: Trip status
+    is_navigating: bool = False  
+    tire_pressure: float = 32.0   # NEW
+    engine_temp: float = 90.0  # NEW: Engine temperature
